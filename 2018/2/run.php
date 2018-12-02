@@ -2,11 +2,16 @@
 <?php
 
 //$start = microtime(true);
+$input = file("input.txt",FILE_IGNORE_NEW_LINES);
 
 if (array_key_exists(1,$argv)) {
 	if ($argv[1] == "1") {
 		echo part1();
 	} elseif ($argv[1] == "2") {
+		echo part2();
+	} elseif ($argv[1] == "both") {
+		echo part1();
+		echo "\n";
 		echo part2();
 	} else {
 		echo "Unknown part number";
@@ -16,7 +21,7 @@ if (array_key_exists(1,$argv)) {
 }
 
 function part1() {
-	$input = file("input.txt",FILE_IGNORE_NEW_LINES);
+	global $input;
 	$doubles = 0;
 	$triples = 0;
 
@@ -42,20 +47,22 @@ function part1() {
 }
 
 function part2() {
-	$table = file("input.txt",FILE_IGNORE_NEW_LINES);
+//	$table = file("input.txt",FILE_IGNORE_NEW_LINES);
+	global $input;
 
-	foreach ($table as $k => $entry) {
+//	$table = $input;
+	foreach ($input as $k => $entry) {
 
 		$halfway = (strlen($entry)/2);
 		$search[0] = substr($entry,0,$halfway);
 		$search[1] = substr($entry,$halfway);
 
 		// we wont need this again
-		unset($table[$k]);
+		unset($input[$k]);
 
 		$one = str_split($entry);
 
-		foreach ($table as $target) {
+		foreach ($input as $target) {
 
 			$test[0] = substr($target,0,$halfway);
 			$test[1] = substr($target,$halfway);
