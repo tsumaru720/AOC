@@ -1,7 +1,6 @@
 #!/usr/bin/php
 <?php
 
-//$start = microtime(true);
 $input = file("input.txt",FILE_IGNORE_NEW_LINES);
 
 if (array_key_exists(1,$argv)) {
@@ -33,13 +32,12 @@ function part1() {
 		$has_triple = false;
 
 		foreach ($table as $count) {
-			if (($count == 2) && (!$has_double)) {
-				$has_double = true;
-				$doubles++;
-			}
 			if (($count == 3) && (!$has_triple)) {
 				$has_triple = true;
 				$triples++;
+			} elseif (($count == 2) && (!$has_double)) {
+				$has_double = true;
+				$doubles++;
 			}
 		}
 	}
@@ -47,10 +45,8 @@ function part1() {
 }
 
 function part2() {
-//	$table = file("input.txt",FILE_IGNORE_NEW_LINES);
 	global $input;
 
-//	$table = $input;
 	foreach ($input as $k => $entry) {
 
 		$halfway = (strlen($entry)/2);
@@ -67,7 +63,7 @@ function part2() {
 			$test[0] = substr($target,0,$halfway);
 			$test[1] = substr($target,$halfway);
 
-			if ((($test[0] == $search[0]) && ($test[1] != $search[1])) || (($test[0] != $search[0]) && ($test[1] == $search[1]))) {
+			if (($test[0] == $search[0]) xor ($test[1] == $search[1])) {
 				//Should only be one of these
 				$difference = 0;
 				$two = str_split($target);
@@ -81,17 +77,11 @@ function part2() {
 				if ($difference == 1) {
 					$one[$errant_pos] = "";
 					$result = join($one);
-					break;
+					break 2;
 				}
 			}
 		}
-		if (isset($result)) { break; }
 	}
-
 	return $result;
 }
-
 echo "\n";
-
-//$time_elapsed_secs = microtime(true) - $start;
-//echo "(".number_format($time_elapsed_secs,4)."s)\n";
