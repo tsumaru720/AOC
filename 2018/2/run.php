@@ -1,11 +1,11 @@
 #!/usr/bin/php
 <?php
 
-$start = microtime(true);
+//$start = microtime(true);
 
 if (array_key_exists(1,$argv)) {
 	if ($argv[1] == "1") {
-		echo "Checksum: ".part1();
+		echo part1();
 	} elseif ($argv[1] == "2") {
 		echo part2();
 	} else {
@@ -16,24 +16,13 @@ if (array_key_exists(1,$argv)) {
 }
 
 function part1() {
-	$file = fopen("input.txt", "r");
+	$input = file("input.txt",FILE_IGNORE_NEW_LINES);
 	$doubles = 0;
 	$triples = 0;
 
-	while ($line = fgets($file)) {
-		$table = array();
-
-		$line = str_replace("\n","",$line);
+	foreach ($input as $line) {
 		$array = str_split($line);
-
-		foreach ($array as $letter) {
-			$key = ord($letter);
-
-			if (!array_key_exists($key,$table)) {
-				$table[$key] = 0;
-			}
-			$table[$key]++;
-		}
+		$table = array_count_values($array);
 
 		$has_double = false;
 		$has_triple = false;
@@ -49,7 +38,6 @@ function part1() {
 			}
 		}
 	}
-	fclose($file);
 	return ($doubles * $triples);
 }
 
@@ -95,7 +83,7 @@ function part2() {
 	return $result;
 }
 
-
 echo "\n";
-$time_elapsed_secs = microtime(true) - $start;
-echo "(".number_format($time_elapsed_secs,4)."s)\n";
+
+//$time_elapsed_secs = microtime(true) - $start;
+//echo "(".number_format($time_elapsed_secs,4)."s)\n";
