@@ -53,6 +53,8 @@ function part2() {
 		// we wont need this again
 		unset($table[$k]);
 
+		$one = str_split($entry);
+
 		foreach ($table as $target) {
 
 			$test[0] = substr($target,0,$halfway);
@@ -61,7 +63,6 @@ function part2() {
 			if ((($test[0] == $search[0]) && ($test[1] != $search[1])) || (($test[0] != $search[0]) && ($test[1] == $search[1]))) {
 				//Should only be one of these
 				$difference = 0;
-				$one = str_split($entry);
 				$two = str_split($target);
 				foreach ($one as $i => $letter) {
 					if ($letter != $two[$i]) {
