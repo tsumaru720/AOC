@@ -3,7 +3,7 @@
 
 if (array_key_exists(1,$argv)) {
 	if ($argv[1] == "1") {
-		echo part1();
+		echo "Checksum: ".part1();
 	} elseif ($argv[1] == "2") {
 		echo part2();
 	} else {
@@ -48,11 +48,7 @@ function part1() {
 		}
 	}
 	fclose($file);
-	echo "Doubles: ".$doubles;
-	echo "\n";
-	echo "Triples: ".$triples;
-	echo "\n";
-	echo "Checksum: ".($doubles * $triples);
+	return ($doubles * $triples);
 }
 
 function part2() {
