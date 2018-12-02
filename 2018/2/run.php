@@ -25,21 +25,18 @@ function part1() {
 	$triples = 0;
 
 	foreach ($input as $line) {
-		$array = str_split($line);
-		$table = array_count_values($array);
 
-		$has_double = false;
-		$has_triple = false;
+		$table = count_chars($line,1);
+		$table = array_count_values($table);
 
-		foreach ($table as $count) {
-			if (($count == 2) && (!$has_double)) {
-				$has_double = true;
-				$doubles++;
-			} elseif (($count == 3) && (!$has_triple)) {
-				$has_triple = true;
-				$triples++;
-			}
+		if (array_key_exists(2,$table)) {
+			$doubles++;
 		}
+
+		if (array_key_exists(3,$table)) {
+			$triples++;
+		}
+
 	}
 	return ($doubles * $triples);
 }
