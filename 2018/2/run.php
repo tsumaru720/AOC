@@ -32,12 +32,12 @@ function part1() {
 		$has_triple = false;
 
 		foreach ($table as $count) {
-			if (($count == 3) && (!$has_triple)) {
-				$has_triple = true;
-				$triples++;
-			} elseif (($count == 2) && (!$has_double)) {
+			if (($count == 2) && (!$has_double)) {
 				$has_double = true;
 				$doubles++;
+			} elseif (($count == 3) && (!$has_triple)) {
+				$has_triple = true;
+				$triples++;
 			}
 		}
 	}
