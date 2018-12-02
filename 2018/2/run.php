@@ -1,6 +1,8 @@
 #!/usr/bin/php
 <?php
 
+$start = microtime(true);
+
 if (array_key_exists(1,$argv)) {
 	if ($argv[1] == "1") {
 		echo "Checksum: ".part1();
@@ -52,22 +54,18 @@ function part1() {
 }
 
 function part2() {
-//	$file = fopen("part2_test.txt", "r");
-	$file = fopen("input.txt", "r");
+	$table = file("input.txt",FILE_IGNORE_NEW_LINES);
 
-	while ($line = fgets($file)) {
-                $line = str_replace("\n","",$line);
-		$table[] = $line;
-	}
-
-	foreach ($table as $entry) {
+	foreach ($table as $k => $entry) {
 
 		$halfway = (strlen($entry)/2);
 		$search[0] = substr($entry,0,$halfway);
 		$search[1] = substr($entry,$halfway);
 
-		foreach ($table as $key => $target) {
-			if ($target == $entry) { continue; }
+		// we wont need this again
+		unset($table[$k]);
+
+		foreach ($table as $target) {
 
 			$test[0] = substr($target,0,$halfway);
 			$test[1] = substr($target,$halfway);
@@ -80,6 +78,7 @@ function part2() {
 				foreach ($one as $i => $letter) {
 					if ($letter != $two[$i]) {
 						$difference++;
+						if ($difference > 1) { break; }
 						$errant_pos = $i;
 					}
 				}
@@ -90,13 +89,13 @@ function part2() {
 				}
 			}
 		}
-
 		if (isset($result)) { break; }
 	}
 
-	fclose($file);
 	return $result;
 }
 
 
 echo "\n";
+$time_elapsed_secs = microtime(true) - $start;
+echo "(".number_format($time_elapsed_secs,4)."s)\n";
