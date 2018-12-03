@@ -47,8 +47,8 @@ function part2() {
 	foreach ($input as $k => $entry) {
 
 		$halfway = (strlen($entry)/2);
-		$search[0] = substr($entry,0,$halfway);
-		$search[1] = substr($entry,$halfway);
+
+		$search = str_split($entry,$halfway);
 
 		// we wont need this again
 		unset($input[$k]);
@@ -56,25 +56,20 @@ function part2() {
 		$one = str_split($entry);
 
 		foreach ($input as $target) {
-
-			$test[0] = substr($target,0,$halfway);
-			$test[1] = substr($target,$halfway);
+			$test = str_split($target,$halfway);
 
 			if (($test[0] == $search[0]) xor ($test[1] == $search[1])) {
-				//Should only be one of these
-				$difference = 0;
-				$two = str_split($target);
-				foreach ($one as $i => $letter) {
-					if ($letter != $two[$i]) {
-						$difference++;
-						if ($difference > 1) { break; }
-						$errant_pos = $i;
-					}
-				}
-				if ($difference == 1) {
-					$one[$errant_pos] = "";
-					$result = join($one);
-					break 2;
+				if ((levenshtein($test[0],$search[0]) <= 1) xor (levenshtein($test[1],$search[1]) <= 1)) {
+					//Should only be one of these
+	                                foreach ($one as $i => $letter) {
+	                                        if ($letter != $target{$i}) {
+	                                                $errant_pos = $i;
+	                                                break;
+	                                        }
+	                                }
+	                                $one[$errant_pos] = "";
+	                                $result = join($one);
+	                                break 2;
 				}
 			}
 		}
