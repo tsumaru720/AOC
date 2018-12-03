@@ -45,8 +45,34 @@ function part1() {
 
 function part2() {
 	global $input;
-	return "part 2";
+
+	$grid = array();
+	$id_overlaps = array();
+
+	$overlap = 0;
+	foreach ($input as $line) {
+
+		preg_match("/#([0-9]+) @ ([0-9]+),([0-9]+): ([0-9]+)x([0-9]+)/",$line,$matches);
+		list(, $id, $left, $top, $width, $height) = $matches;
+		$id_overlaps[$id] = false;
+
+		for ($y = $top; $y < ($top + $height); $y++) {
+			if (!array_key_exists($y, $grid)) { $grid[$y] = array(); }
+			for ($x = $left; $x < ($left + $width); $x++) {
+				if (!array_key_exists($x, $grid[$y])) { $grid[$y][$x] = array(); }
+				$grid[$y][$x][] = $id;
+				if (count($grid[$y][$x]) == 2) {
+					foreach ($grid[$y][$x] as $update) {
+						$id_overlaps[$update] = true;
+					}
+					$overlap++;
+				 }
+			}
+		}
+	}
+	return array_search(false, $id_overlaps);
 }
+
 
 echo "\n";
 
