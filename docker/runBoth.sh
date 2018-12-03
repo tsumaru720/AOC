@@ -10,6 +10,7 @@ if [ -e "run.php" ]; then
 #	php run.php 2
 	php run.php both
 elif [ -e "day${DAY}.py" ]; then
-	pypy day${DAY}.py 1
-	pypy day${DAY}.py 2
+#	python day${DAY}.py 1
+#	python day${DAY}.py 2
+	python day${DAY}.py both
 fi;

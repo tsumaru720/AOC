@@ -45,6 +45,9 @@ if sys.argv[1] == "1":
 	print part1()
 elif sys.argv[1] == "2":
 	print part2()
+elif sys.argv[1] == "both":
+	print part1()
+	print part2()
 else:
 	print "What?"
 	exit()

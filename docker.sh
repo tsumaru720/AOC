@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IMAGE=tsumaru720/aoc-03
+IMAGE=tsumaru720/aoc-04
 
 docker image inspect $IMAGE >/dev/null 2>&1
 if [ $? -ne 0 ]
