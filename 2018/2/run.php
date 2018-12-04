@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-$input = file("shane.txt",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$input = file("input.txt",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 if (array_key_exists(1,$argv)) {
 	if ($argv[1] == "1") {
