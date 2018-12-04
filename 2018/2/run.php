@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-$input = file("input.txt",FILE_IGNORE_NEW_LINES);
+$input = file("shane.txt",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 if (array_key_exists(1,$argv)) {
 	if ($argv[1] == "1") {
@@ -59,7 +59,7 @@ function part2() {
 			$test = str_split($target,$halfway);
 
 			if (($test[0] == $search[0]) xor ($test[1] == $search[1])) {
-				if ((levenshtein($test[0],$search[0]) <= 1) xor (levenshtein($test[1],$search[1]) <= 1)) {
+				if ((levenshtein($test[0],$search[0]) == 1) xor (levenshtein($test[1],$search[1]) == 1)) {
 					//Should only be one of these
 	                                foreach ($one as $i => $letter) {
 	                                        if ($letter != $target{$i}) {
