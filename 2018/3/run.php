@@ -2,7 +2,7 @@
 <?php
 ini_set('memory_limit','-1');
 
-$input = file("input.txt",FILE_IGNORE_NEW_LINES);
+$input = file("input.txt",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 $results = iterate();
 
 if (array_key_exists(1,$argv)) {
@@ -43,11 +43,14 @@ function iterate() {
 
 				if (!array_key_exists($x, $grid[$y])) { $grid[$y][$x] = array(); }
 				$grid[$y][$x][] = $id;
-				if (count($grid[$y][$x]) == 2) {
+				$count = count($grid[$y][$x]);
+				if ($count == 2) {
+					$overlap++;
+				 }
+				if ($count >= 2) {
 					foreach ($grid[$y][$x] as $update) {
 						$id_overlaps[$update] = true;
 					}
-					$overlap++;
 				 }
 			}
 		}
