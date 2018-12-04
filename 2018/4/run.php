@@ -4,9 +4,12 @@ ini_set('memory_limit','-1');
 
 class GuardList {
 	private $guard = array();
+	private $laziest = NULL;
+	private $sleepiest = NULL;
 
 	public function parse($log) {
 		$whos_on = NULL;
+
 		foreach ($log->get() as $k => $entry) {
 			$action = strtok($entry['event'],' ');
 			if ($action == "Guard") {
@@ -33,31 +36,25 @@ class GuardList {
 				}
 			}
 		}
+
 		foreach ($this->guard as $id => $guard) {
-			$most = $this->most_minutes($guard['id']);
-			$this->guard[$id]['most'] = $most;
+			$guard['most'] = $this->most_minutes($guard['id']);
+
+			if ($guard['total'] > $this->laziest['total']) {
+				$this->laziest = $guard;
+			}
+			if ($guard['most']['tot'] > $this->sleepiest['most']['tot']) {
+				$this->sleepiest = $guard;
+			}
 		}
 	}
 	
 	public function laziest() {
-		$laziest = NULL;
-		foreach ($this->guard as $guard) {
-			if ($guard['total'] > $laziest['total']) {
-				$laziest = $guard;
-			}
-		}
-		return $laziest;
+		return $this->laziest;
 	}
 
 	public function sleepiest() {
-		$sleepiest = NULL;
-		foreach ($this->guard as $guard) {
-			if ($guard['most']['tot'] > $sleepiest['most']['tot']) {
-				$sleepiest = $guard;
-			}
-
-		}
-		return $sleepiest;
+		return $this->sleepiest;
 	}
 	
 	private function most_minutes($guard) {
@@ -74,6 +71,7 @@ class GuardList {
 		$array = array();
 		$array['id'] = $guard;
 		$array['total'] = 0;
+		$array['most'] = array('min' => 0, 'tot' => 0);
 		for ($i = 0; $i < 60; $i++) {
 			$array[$i] = 0;
 		}
