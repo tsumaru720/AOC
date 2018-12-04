@@ -30,7 +30,6 @@ class GuardList {
 					$this->guard[$whos_on][$minute]++;
 					$minute++;
 					if ($minute >= 60) { $minute = 0; }
-
 				}
 			}
 		}
@@ -43,7 +42,20 @@ class GuardList {
 				$laziest = $guard;
 			}
 		}
-		return $laziest['id'];
+		return array($laziest['id'],$this->most_minutes($laziest['id'])['min']);
+	}
+
+	public function sleepiest() {
+		$sleepiest = NULL;
+		foreach ($this->guard as $guard) {
+			$time = $this->most_minutes($guard['id']);
+			$guard['most'] = $time;
+			if ($guard['most']['tot'] > $sleepiest['most']['tot']) {
+				$sleepiest = $guard;
+			}
+
+		}
+		return array($sleepiest['id'], $sleepiest['most']['min']);
 	}
 	
 	public function most_minutes($guard) {
@@ -53,7 +65,7 @@ class GuardList {
 				$most = array('min' => $i, 'tot' => $this->guard[$guard][$i]);
 			}
 		}
-		return $most['min'];
+		return $most;
 	}
 	
 	private function init($guard) {
@@ -104,7 +116,9 @@ $guards = new GuardList();
 $guards->parse($log);
 
 $lazy = $guards->laziest();
-$most_minutes = $guards->most_minutes($lazy);
+echo ($lazy[0] * $lazy[1]);
+echo "\n";
 
-echo ($lazy * $most_minutes);
+$sleepy = $guards->sleepiest();
+echo ($sleepy[0] * $sleepy[1]);
 echo "\n";
