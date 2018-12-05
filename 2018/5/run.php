@@ -27,7 +27,7 @@ foreach ($units as $unit) {
 	$tmp = $polymer;
 	$tmp = str_replace($unit, '', $tmp);
 
-	$result[] = strlen(react($tmp));;
+	$result[] = strlen(react($tmp));
 }
 
 echo min($result);
