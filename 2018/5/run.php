@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-$alphabet = [
+$units = [
 	['a','A'], ['b','B'], ['c','C'], ['d','D'], ['e','E'], ['f','F'], ['g','G'], ['h','H'], ['i','I'],
 	['j','J'], ['k','K'], ['l','L'], ['m','M'], ['n','N'], ['o','O'], ['p','P'], ['q','Q'], ['r','R'],
 	['s','S'], ['t','T'], ['u','U'], ['v','V'], ['w','W'], ['x','X'], ['y','Y'], ['z','Z']
@@ -23,9 +23,9 @@ echo PHP_EOL;
 
 $result = array();
 
-foreach ($alphabet as $pair) {
+foreach ($units as $unit) {
 	$tmp = $polymer;
-	$tmp = str_replace($pair, '', $tmp);
+	$tmp = str_replace($unit, '', $tmp);
 
 	$result[] = strlen(react($tmp));;
 }
