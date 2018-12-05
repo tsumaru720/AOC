@@ -3,72 +3,43 @@
 ini_set('memory_limit','-1');
 
 $input = file("input.txt",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-$results = iterate();
 
-if (array_key_exists(1,$argv)) {
-	if ($argv[1] == "1") {
-		echo part1();
-	} elseif ($argv[1] == "2") {
-		echo part2();
-	} else {
-		both();
-	}
-} else {
-	both();
-}
+$grid = array();
+$id_overlaps = array();
+$overlap = 0;
 
-function both() {
-	echo part1();
-	echo "\n";
-	echo part2();
-}
+foreach ($input as $line) {
 
-function iterate() {
-	global $input;
+	preg_match("/#([0-9]+) @ ([0-9]+),([0-9]+): ([0-9]+)x([0-9]+)/",$line,$matches);
+	list(, $id, $left, $top, $width, $height) = $matches;
+	$id_overlaps[$id] = false;
 
-	$grid = array();
-	$id_overlaps = array();
-	$overlap = 0;
-
-	foreach ($input as $line) {
-
-		preg_match("/#([0-9]+) @ ([0-9]+),([0-9]+): ([0-9]+)x([0-9]+)/",$line,$matches);
-		list(, $id, $left, $top, $width, $height) = $matches;
-		$id_overlaps[$id] = false;
-
+	
+	for ($x = $left; $x < ($left + $width); $x++) {
 		for ($y = $top; $y < ($top + $height); $y++) {
+			$coord = [$x,$y];
 
-			if (!array_key_exists($y, $grid)) { $grid[$y] = array(); }
-			for ($x = $left; $x < ($left + $width); $x++) {
-
-				if (!array_key_exists($x, $grid[$y])) { $grid[$y][$x] = array(); }
-				$grid[$y][$x][] = $id;
-				$count = count($grid[$y][$x]);
-				if ($count == 2) {
-					$overlap++;
-				 }
-				if ($count >= 2) {
-					foreach ($grid[$y][$x] as $update) {
-						$id_overlaps[$update] = true;
-					}
-				 }
+			$gid = cantor($coord[0], $coord[1]);
+			$grid[$gid][] = $id;
+			$count = count($grid[$gid]);
+			if ($count == 2) {
+				$overlap++;
+			}
+			if ($count >= 2) {
+				foreach ($grid[$gid] as $update) {
+					unset($id_overlaps[$update]);
+				}
 			}
 		}
 	}
-	return array($overlap,array_search(false, $id_overlaps));
+}
+echo $overlap;
+echo PHP_EOL;
+echo array_keys($id_overlaps)[0];
+echo PHP_EOL;
+
+
+function cantor($x, $y) {
+	return (($x + $y) * ($x + $y + 1)) / 2 + $y;
 
 }
-
-function part1() {
-	global $results;
-	return $results[0];
-}
-
-function part2() {
-	global $results;
-	return $results[1];
-}
-
-
-echo "\n";
-
