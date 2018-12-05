@@ -15,33 +15,32 @@ $pairs = ['aA' => '','Aa' => '','bB' => '','Bb' => '','cC' => '','Cc' => '','dD'
 		'Ww' => '','xX' => '','Xx' => '','yY' => '','Yy' => '','zZ' => '','Zz' => ''];
 
 
-$polymer = file("input.txt",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)[0];
-echo strlen(react($polymer, $pairs));
+$polymer = file('input.txt',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)[0];
+$polymer = react($polymer);
+
+echo strlen($polymer);
 echo PHP_EOL;
 
 $result = array();
-
 
 foreach ($alphabet as $pair) {
 	$tmp = $polymer;
 	$tmp = str_replace($pair, '', $tmp);
 
-	$x = react($tmp, $pairs);
-
-	$result[] = strlen($x);;
+	$result[] = strlen(react($tmp));;
 }
 
 echo min($result);
 echo PHP_EOL;
 
-function react($polymer, $pairs) {
-
+function react($polymer) {
+	global $pairs;
 	$tmp = strtr($polymer,$pairs);
 
 	while ($tmp !== $polymer) {
 		$polymer = $tmp;
 		$tmp = strtr($polymer,$pairs);
 	}
-	
+
 	return $tmp;
 }
