@@ -6,6 +6,8 @@ foreach (file("input.txt",FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $c) 
 	$coord[] = ['x' => $c[0], 'y' => $c[1], 'area' => 0];
 }
 
+$safe = 0;
+
 $x_max = max(array_column($coord,'x'));
 $y_max = max(array_column($coord,'y'));
 
@@ -19,6 +21,9 @@ for ($y = 0; $y <= $y_max; $y++) {
 			$taxi = abs($x_diff) + abs($y_diff);
 
 			$tmp[$k] = $taxi;
+		}
+		if (array_sum($tmp) < 10000) {
+			$safe++;
 		}
 		asort($tmp);
 		reset($tmp);
@@ -53,6 +58,9 @@ for ($x = 0; $x <= $x_max; $x++) {
 
 
 echo max(array_column($coord,'area'));
+echo PHP_EOL;
+
+echo $safe;
 echo PHP_EOL;
 
 
