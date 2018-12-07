@@ -42,7 +42,7 @@ for ($y = $y_min; $y <= $y_max; $y++) {
 		$closest = array_keys($tmp, min($tmp));
 		if (array_key_exists($closest[0], $ignore)) { continue; }
 
-		if (!array_key_exists(2,$closest)) {
+		if (!array_key_exists(1,$closest)) {
 			$coord[$closest[0]]['area']++;
 			$grid[$y][$x] = $closest[0];
 		}
