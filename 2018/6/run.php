@@ -20,6 +20,7 @@ for ($y = $y_min; $y <= $y_max; $y++) {
 	for ($x = $x_min; $x <= $x_max; $x++) {
 		$grid[$y][$x] = NULL;
 		$tmp = [];
+		$total = 0;
 		foreach ($coord as $k => $p) {
 			$x_diff = ($x - $p['x']);
 			$y_diff = ($y - $p['y']);
@@ -33,21 +34,21 @@ for ($y = $y_min; $y <= $y_max; $y++) {
 			$taxi = $x_diff + $y_diff;
 
 			$tmp[$k] = $taxi;
+			$total += $taxi;
 		}
-		if (array_sum($tmp) < 10000) {
+		if ($total < 10000) {
 			$safe++;
 		}
 		$closest = array_keys($tmp, min($tmp));
 		if (array_key_exists($closest[0], $ignore)) { continue; }
 
-		$count = count($closest);
-		if ($count < 2) {
+		if (!array_key_exists(2,$closest)) {
 			$coord[$closest[0]]['area']++;
 			$grid[$y][$x] = $closest[0];
 		}
 
 		//Check for infinite
-		if ((($y == $y_min) || ($y == $y_max)) xor (($x == $x_min) || ($x == $x_max))) {
+		if ((($y == $y_min) || ($y == $y_max)) or (($x == $x_min) || ($x == $x_max))) {
 			$coord[$closest[0]]['area'] = 0;
 			$ignore[$closest[0]] = true;
 		}
