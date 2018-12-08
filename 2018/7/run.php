@@ -6,12 +6,13 @@ $unlocks = [];
 $resolved = [];
 $remaining = [];
 $worker = [];
+$num_workers = 0;
 $finished = false;
 
-$time = ['A' => 1, 'B' => 2, 'C' => 3, 'D' => 4, 'E' => 5, 'F' => 6, 'G' => 7,
-	'H' => 8, 'I' => 9, 'J' => 10, 'K' => 11, 'L' => 12, 'M' => 13, 'N' => 14,
-	'O' => 15, 'P' => 16, 'Q' => 17, 'R' => 18, 'S' => 19, 'T' => 20, 'U' => 21,
-	'V' => 22, 'W' => 23, 'X' => 24, 'Y' => 25, 'Z' => 26];
+$time = ['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'E' => 0, 'F' => 0, 'G' => 0,
+	'H' => 0, 'I' => 0, 'J' => 0, 'K' => 0, 'L' => 0, 'M' => 0, 'N' => 0,
+	'O' => 0, 'P' => 0, 'Q' => 0, 'R' => 0, 'S' => 0, 'T' => 0, 'U' => 0,
+	'V' => 0, 'W' => 0, 'X' => 0, 'Y' => 0, 'Z' => 0];
 
 foreach (file('input.txt',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $inst) {
 	$c = explode(' ', $inst);
@@ -39,6 +40,10 @@ echo PHP_EOL;
 
 $required = $copy_required;
 $unlocks = $copy_unlocks;
+$time = ['A' => 1, 'B' => 2, 'C' => 3, 'D' => 4, 'E' => 5, 'F' => 6, 'G' => 7,
+	'H' => 8, 'I' => 9, 'J' => 10, 'K' => 11, 'L' => 12, 'M' => 13, 'N' => 14,
+	'O' => 15, 'P' => 16, 'Q' => 17, 'R' => 18, 'S' => 19, 'T' => 20, 'U' => 21,
+	'V' => 22, 'W' => 23, 'X' => 24, 'Y' => 25, 'Z' => 26];
 
 init_workers(5);
 iterate(60);
@@ -46,7 +51,7 @@ echo $elapsed;
 echo PHP_EOL;
 
 function iterate($interval) {
-	global $required, $elapsed, $remaining, $resolved, $finished, $step;
+	global $required, $elapsed, $remaining, $resolved, $finished, $step, $num_workers;
 
 	$step = $interval;
 	$elapsed = -1;
@@ -56,6 +61,7 @@ function iterate($interval) {
 	$finished = false;
 	while (!$finished) {
 		fill_workers(find_ready($required));
+		if (idle_workers() === $num_workers) { $finished = true; }
 	}
 
 	return join($resolved);
@@ -73,11 +79,26 @@ function find_ready(&$required) {
 }
 
 function init_workers($count) {
-	global $worker;
+	global $worker, $num_workers;
+
+	$num_workers = $count;
 	$worker = [];
 	for ($w = 0; $w < $count; $w++) {
 		$worker[$w] = ['task' => '', 'time' => 0, 'elapsed' => 0];
 	}
+}
+
+function idle_workers() {
+	global $worker;
+
+	$idle = 0;
+	foreach ($worker as $w => $v) {
+		if ($worker[$w]['task'] === '') {
+			$idle++;
+		}
+	}
+	return $idle;
+
 }
 
 function fill_workers($ready) {
@@ -138,6 +159,7 @@ function resolve_dep($next) {
 		}
 	} else {
 		$resolved[$next] = $next;
-		$finished = true;
+		unset($remaining[$next]);
+		unset($required[$next]);
 	}
 }
