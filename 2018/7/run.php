@@ -1,17 +1,6 @@
 #!/usr/bin/php
 <?php
 
-/*
-Only C is available, and so it is done first.
-Next, both A and F are available. A is first alphabetically, so it is done next.
-Then, even though F was available earlier, steps B and D are now also available, and B is the first alphabetically of the three.
-After that, only D and F are available. E is not available because only some of its prerequisites are complete. Therefore, D is completed next.
-F is the only choice, so it is done next.
-Finally, E is completed.
-
-So, in this example, the correct order is CABDFE.
-*/
-
 $required = [];
 $unlocks = [];
 $resolved = [];
@@ -44,22 +33,22 @@ foreach (file('input.txt',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $ins
 $copy_required = $required;
 $copy_unlocks = $unlocks;
 
-init_workers(1, $worker);
-echo iterate();
+init_workers(1);
+echo iterate(1);
 echo PHP_EOL;
 
 $required = $copy_required;
 $unlocks = $copy_unlocks;
 
-init_workers(5, $worker);
-iterate(5, 60);
+init_workers(5);
+iterate(60);
 echo $elapsed;
 echo PHP_EOL;
 
-function iterate($worker_count = 1, $interval = 1) {
+function iterate($interval) {
 	global $required, $elapsed, $remaining, $resolved, $finished, $step;
 
-	$step = ($interval);
+	$step = $interval;
 	$elapsed = -1;
 
 	$resolved = [];
@@ -83,7 +72,8 @@ function find_ready(&$required) {
 	return $remaining;
 }
 
-function init_workers($count, &$worker) {
+function init_workers($count) {
+	global $worker;
 	$worker = [];
 	for ($w = 0; $w < $count; $w++) {
 		$worker[$w] = ['task' => '', 'time' => 0, 'elapsed' => 0];
@@ -92,13 +82,12 @@ function init_workers($count, &$worker) {
 
 function fill_workers($ready) {
 	global $worker, $required, $time, $step, $elapsed, $remaining;
-	global $resolved;
 
-	$elapsed++;
+	// Finish tasks
 	foreach ($worker as $w => $v) {
 		if ($worker[$w]['task'] != '') {
 			$worker[$w]['elapsed']++;
-			if ($worker[$w]['elapsed'] >= $worker[$w]['time']) {
+			if ($worker[$w]['elapsed'] == $worker[$w]['time']) {
 				resolve_dep($worker[$w]['task']);
 				$ready = array_merge($ready, find_ready($required));
 				ksort($ready);
@@ -107,6 +96,9 @@ function fill_workers($ready) {
 				$worker[$w]['elapsed'] = 0;
 			}
 		}
+	}
+	// Start new tasks in available workers
+	foreach ($worker as $w => $v) {
 		if ($worker[$w]['task'] === '') {
 			if (count($ready) > 0) {
 				$next = key($ready);
@@ -118,11 +110,13 @@ function fill_workers($ready) {
 			}
 		}
 	}
-	/*
+	$elapsed++;
+/*
+	global $resolved;
 	echo $elapsed."\t";
 
 	foreach ($worker as $w => $v) {
-		echo ($worker[$w]['task'] === '' ? '.' : $worker[$w]['task'])."\t";
+		echo ($worker[$w]['task'] === '' ? '.' : $worker[$w]['task'])." ";
 	}
 	echo "\t".join($resolved);
 	echo PHP_EOL;*/
