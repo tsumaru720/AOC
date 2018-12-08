@@ -16,8 +16,13 @@ $required = [];
 $unlocks = [];
 $resolved = [];
 $remaining = [];
+$worker = [];
 $finished = false;
-$next = '';
+
+$time = ['A' => 1, 'B' => 2, 'C' => 3, 'D' => 4, 'E' => 5, 'F' => 6, 'G' => 7,
+	'H' => 8, 'I' => 9, 'J' => 10, 'K' => 11, 'L' => 12, 'M' => 13, 'N' => 14,
+	'O' => 15, 'P' => 16, 'Q' => 17, 'R' => 18, 'S' => 19, 'T' => 20, 'U' => 21,
+	'V' => 22, 'W' => 23, 'X' => 24, 'Y' => 25, 'Z' => 26];
 
 foreach (file('input.txt',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $inst) {
 	$c = explode(' ', $inst);
@@ -28,7 +33,7 @@ foreach (file('input.txt',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $ins
 
 	$required[$b][$a] = $a;
 	$unlocks[$a][$b] = $b;
-	
+
 	if (!array_key_exists($a,$required)) {
 		$required[$a] = [];
 	}
@@ -36,14 +41,36 @@ foreach (file('input.txt',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $ins
 		$unlocks[$b] = [];
 	}
 }
+$copy_required = $required;
+$copy_unlocks = $unlocks;
 
-while (!$finished) {
-	$next = key(find_ready($required));
-	resolve_dep($next);
-}
-
-echo join($resolved);
+init_workers(1, $worker);
+echo iterate();
 echo PHP_EOL;
+
+$required = $copy_required;
+$unlocks = $copy_unlocks;
+
+init_workers(5, $worker);
+iterate(5, 60);
+echo $elapsed;
+echo PHP_EOL;
+
+function iterate($worker_count = 1, $interval = 1) {
+	global $required, $elapsed, $remaining, $resolved, $finished, $step;
+
+	$step = ($interval);
+	$elapsed = -1;
+
+	$resolved = [];
+	$remaining = [];
+	$finished = false;
+	while (!$finished) {
+		fill_workers(find_ready($required));
+	}
+
+	return join($resolved);
+}
 
 function find_ready(&$required) {
 	global $remaining;
@@ -56,13 +83,57 @@ function find_ready(&$required) {
 	return $remaining;
 }
 
-function resolve_dep(&$next) {
+function init_workers($count, &$worker) {
+	$worker = [];
+	for ($w = 0; $w < $count; $w++) {
+		$worker[$w] = ['task' => '', 'time' => 0, 'elapsed' => 0];
+	}
+}
+
+function fill_workers($ready) {
+	global $worker, $required, $time, $step, $elapsed, $remaining;
+	global $resolved;
+
+	$elapsed++;
+	foreach ($worker as $w => $v) {
+		if ($worker[$w]['task'] != '') {
+			$worker[$w]['elapsed']++;
+			if ($worker[$w]['elapsed'] >= $worker[$w]['time']) {
+				resolve_dep($worker[$w]['task']);
+				$ready = array_merge($ready, find_ready($required));
+				ksort($ready);
+				$worker[$w]['task'] = '';
+				$worker[$w]['time'] = 0;
+				$worker[$w]['elapsed'] = 0;
+			}
+		}
+		if ($worker[$w]['task'] === '') {
+			if (count($ready) > 0) {
+				$next = key($ready);
+				unset($ready[$next]);
+				unset($required[$next]);
+				unset($remaining[$next]);
+				$worker[$w]['task'] = $next;
+				$worker[$w]['time'] = $time[$next] + $step;
+			}
+		}
+	}
+	/*
+	echo $elapsed."\t";
+
+	foreach ($worker as $w => $v) {
+		echo ($worker[$w]['task'] === '' ? '.' : $worker[$w]['task'])."\t";
+	}
+	echo "\t".join($resolved);
+	echo PHP_EOL;*/
+}
+
+
+function resolve_dep($next) {
 	global $required, $unlocks, $resolved, $remaining, $finished;
 
-	$pre = count($required[$next]);
-	$post = count($unlocks[$next]);
-
-	if (($pre <= 1) and ($post > 0)) {
+	$unlocked = count($unlocks[$next]);
+	if ($unlocked > 0) {
 		$resolved[$next] = $next;
 
 		unset($remaining[$next]);
@@ -71,10 +142,8 @@ function resolve_dep(&$next) {
 		foreach ($unlocks[$next] as $cleared) {
 			unset($required[$cleared][$next]);
 		}
-	} elseif ($pre == 0 and $post == 0) {
+	} else {
 		$resolved[$next] = $next;
 		$finished = true;
 	}
 }
-
-
