@@ -31,28 +31,27 @@ $tree = explode(' ', $input);
 $nodes = [];
 $meta_count = 0;
 
-// Create first node
+$tree = array_reverse($tree);
 
 add_node($tree);
 echo $meta_count;
 echo PHP_EOL;
 
+
 function add_node(&$data) {
 	global $nodes, $meta_count;
 
-	$header['children'] = $data[0];
-	$header['metadata'] = $data[1];	
-	unset($data[0]);
-	unset($data[1]);
+	$meta = [];
 
-	$data = array_values($data);
+	$header['children'] = array_pop($data);
+	$header['metadata'] = array_pop($data);
 	
 	for ($i = 0; $i < $header['children']; $i++) {
 		add_node($data);
 	}
-	
+
 	for ($i = 0; $i < $header['metadata']; $i++) {
-		$meta[] = array_shift($data);
+		$meta[] = array_pop($data);
 	}
 	$nodes[] = ['header' => ['children' => $header['children'], 'metadata' => $header['metadata']], 'metadata' => $meta];
 	$meta_count += array_sum($meta);
