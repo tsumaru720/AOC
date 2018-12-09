@@ -1,60 +1,69 @@
 #!/usr/bin/php
 <?php
 
-/*
-Specifically, a node consists of:
-
-A header, which is always exactly two numbers:
-The quantity of child nodes.
-The quantity of metadata entries.
-Zero or more child nodes (as specified in the header).
-One or more metadata entries (as specified in the header).
-
-Each child node is itself a node that has its own header, child nodes, and metadata. For example:
-
-2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2
-A----------------------------------
-    B----------- C-----------
-                     D-----
-In this example, each node of the tree is also marked with an underline starting with a letter for easier identification. In it, there are four nodes:
-
-A, which has 2 child nodes (B, C) and 3 metadata entries (1, 1, 2).
-B, which has 0 child nodes and 3 metadata entries (10, 11, 12).
-C, which has 1 child node (D) and 1 metadata entry (2).
-D, which has 0 child nodes and 1 metadata entry (99).
-
-*/
-
-
 $input = file('input.txt',FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)[0];
 $tree = explode(' ', $input);
 $nodes = [];
-$meta_count = 0;
+$metadata_total = 0;
+$current_node = 0;
 
 $tree = array_reverse($tree);
 
+// Part 1
 add_node($tree);
-echo $meta_count;
+echo $metadata_total;
 echo PHP_EOL;
 
+// Part 2
+$root_value = 0;
+get_value(0);
+echo $root_value;
+echo PHP_EOL;
 
-function add_node(&$data) {
-	global $nodes, $meta_count;
+// End
 
-	$meta = [];
+function get_value($check) {
+	global $root_value, $nodes;
+	$i = $check;
 
-	$header['children'] = array_pop($data);
-	$header['metadata'] = array_pop($data);
-	
-	for ($i = 0; $i < $header['children']; $i++) {
-		add_node($data);
+	if (!array_key_exists('children',$nodes[$i])) {
+		$root_value += $nodes[$i]['value'];
+	} else {
+		foreach ($nodes[$i]['metadata'] as $metadata) {
+			if ($metadata <= count($nodes[$i]['children'])) {
+				get_value($nodes[$i]['children'][$metadata - 1]);
+			}
+		}
+	}
+}
+
+function add_node(&$data, $parent = -1) {
+	global $nodes, $metadata_total, $current_node;
+
+	$metadata = [];
+	$index = $current_node;
+	$current_node++;
+
+	$children_count = array_pop($data);
+	$metadata_count = array_pop($data);
+
+	for ($i = 0; $i < $children_count; $i++) {
+		add_node($data, $index);
 	}
 
-	for ($i = 0; $i < $header['metadata']; $i++) {
-		$meta[] = array_pop($data);
+	for ($i = 0; $i < $metadata_count; $i++) {
+		$metadata[] = array_pop($data);
 	}
-	$nodes[] = ['header' => ['children' => $header['children'], 'metadata' => $header['metadata']], 'metadata' => $meta];
-	$meta_count += array_sum($meta);
+
+	$nodes[$index]['metadata'] = $metadata;
+	$nodes[$index]['value'] = array_sum($metadata);
+
+	if ($parent >= 0) {
+		$nodes[$parent]['children'][] = $index;
+	}
+
+	$metadata_total += $nodes[$index]['value'];
+
 }
 
 
